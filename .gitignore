@@ -1,3 +1,8 @@
+data/
+result/
+logs/
+
+
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template
 # Byte-compiled / optimized / DLL files
@@ -10,8 +15,6 @@ example.*
 
 # C extensions
 *.so
-
-logs/
 
 # Distribution / packaging
 .Python
@@ -133,7 +136,3 @@ dmypy.json
 /.idea/
 */__pycache__
 /.vscode/settings.json
-/stock/negative_fcf_stocks.csv
-/stock/positive_fcf_stocks.csv
-/stock/step1_fcff.csv
-/stock/step2_calculate_fcf_yield.csv

@@ -1,11 +1,12 @@
+# filename: tushare_test4.py
+
 import os
 import sys
 
 import pandas as pd
 
 from data_cache import dc
-from stock_utils import setup_logger, fetch_weekly, get_quarter_end_dates, get_friday_trade_dates, \
-    auto_adjust_column_width, get_last_trade_date
+from stock_utils import setup_logger, fetch_weekly, get_quarter_end_dates, auto_adjust_column_width, get_last_trade_date
 from tushare_test3 import test3
 
 logger = setup_logger()
@@ -181,5 +182,3 @@ if __name__ == "__main__":
     logger.info(f"当前处理交易日：{trade_date}")
 
     main(trade_date)
-
-

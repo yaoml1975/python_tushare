@@ -9,7 +9,7 @@ logger = setup_logger()
 
 
 def check_and_fetch(file_prefix, fetch_function, trade_dates):
-    """检查 csv 是否存在，不存在则调用 fetch_function 生成"""
+    """检查 csv 是否存在，如果不存在则调用 fetch_function 生成"""
     for trade_date in trade_dates:
         filename = f"{file_prefix}_{trade_date}.csv"
         full_path = os.path.join(dc.csv_dir, filename)

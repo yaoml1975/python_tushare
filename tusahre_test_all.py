@@ -13,7 +13,7 @@ def main():
     friday_trade_dates = get_friday_trade_dates(2025, 2)
 
     for trade_date in friday_trade_dates:
-        logger.info(f'当前日期: {trade_date}')
+        logger.info(f'运行日期: {trade_date}')
 
         logger.info('-' * 20 + ' tushare_test1.main() ' + '-' * 20)
         tushare_test1.main(trade_date)

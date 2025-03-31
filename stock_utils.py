@@ -15,7 +15,7 @@ from data_cache import dc
 
 def setup_logger(name=None):
     """
-    初始化日志配置，默认日志文件名与调用此函数的脚本文件同名
+    初始化日志配置，默认日志文件名与调用此函数的脚本文件同名。
 
     :param name: 指定日志文件名（不带扩展名），默认为调用此函数的脚本名
     :return: 返回配置好的 logger 实例

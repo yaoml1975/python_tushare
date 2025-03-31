@@ -1,8 +1,198 @@
-# 量化交易选股步骤
+# 项目介绍：基于巴菲特选股策略的量化选股工具 - python_tushare
 
-## 1.资源说明
+## 项目概述
 
-### 1.1 工具类stock_utils
+本项目是一个基于Python开发的量化投资选股工具，通过调用**Tushare金融数据接口**，实现了沃伦·巴菲特(Warren Buffett)价值投资策略的自动化筛选选股流程。该程序将巴菲特的经典选股原则转化为可量化的指标，通过四个系统化的步骤对A股市场股票进行筛选，帮助投资者发现具有长期投资价值的优质企业。
+
+## 技术架构
+
+### 核心组件
+• **编程语言**: Python 3.9.21
+• **数据接口**: Tushare Pro API (需注册获取token)
+• **主要依赖库**:（详见:requirements.txt)
+  • pandas (数据处理)
+  • numpy (数值计算)
+  • tushare (金融数据获取)
+  • matplotlib/seaborn (可视化)
+  • requests (API调用)
+  • logging (日志记录)
+
+### 数据源
+通过**Tushare Pro**接口获取以下金融数据:**（需申请5000积分的token）**
+• 股票基本信息
+• 财务数据(资产负债表、利润表、现金流量表)
+• 行情数据(日K线、复权因子)
+• 估值指标(PE/PB/PS等)
+
+
+## 巴菲特选股策略的四步实现
+
+### 股票筛选程序 - tushare_test1.py
+
+#### 功能描述
+
+1. 本程序通过load_or_fetch_stock_basic 获取上市公司基础信息。
+2. 根据以下规则筛选股票：
+  - 排除近两年上市的股票；
+  - 排除名称含 "ST" 的股票；
+  - 排除代码以 "8" 或 "9" 开头的股票（新三板和 B 股市场）；
+  - 排除掉民营企业、外资企业的股票
+  - 仅保留市场类型market为"主板"的股票;
+3. 保存结果为 tushare_stock_basic_filter_交易日期.csv
+
+#### 输入内容
+
+1. 交易日期：最近一个交易日。可通过工具类stock_utils的函数get_last_trade_date()获取最近一个交易日期。
+
+#### 输出文件和内容
+
+1. CSV 文件：`tushare_stock_basic_filter2_交易日期.csv`，包含以下字段：
+   1. `ts_code`：股票代码。
+   2. `name`：股票名称。
+   3. `area`：地域。
+   4. `industry`：所属行业。
+   5. `market`：市场类型。
+   6. `list_status`：上市状态。
+   7. `list_date`：上市日期。
+   8. `is_hs`：是否沪深港通标的。
+
+---
+
+### 股票筛选程序 - tushare_test2.py
+
+#### 功能描述
+
+1. 获取最近交易日期。
+2. 读取 `tushare_stock_basic_filter_交易日期.csv`（基础筛选结果，以下简称 csv1）。
+3. 读取 `tushare_daily_交易日期.csv`（日线行情数据，以下简称 csv2）和`tushare_daily_basic_交易日期.csv`（每日指标数据，以下简称 csv3）。
+4. 仅合并 `csv1` 中包含的股票，在 `csv2` 和 `csv3` 中对应的数据。
+5. 根据以下规则筛选股票：
+  - 排除流通市值（circ_mv）大于 500 亿的股票。
+  - 排除市盈率（pe）小于 5 或大于 50 的股票。
+6. 保存筛选结果为 `tushare_stock_basic_filter2_交易日期.csv`。
+
+#### 输入内容
+
+1. 交易日期：最近一个交易日（通过 `get_last_trade_date` 获取）。
+2. 输入文件：
+  - `tushare_stock_basic_filter_交易日期.csv`（csv1）。
+  - `tushare_daily_交易日期.csv`（csv2）。
+  - `tushare_daily_basic_交易日期.csv`（csv3）。
+
+#### 输出文件和内容
+
+1. CSV 文件：`tushare_stock_basic_filter2_交易日期.csv`，包含以下字段：
+  - `ts_code`：股票代码。
+  - `name`：股票名称。
+  - `area`：地域。
+  - `industry`：所属行业。
+  - `market`：市场类型。
+  - `list_status`：上市状态。
+  - `list_date`：上市日期。
+  - `is_hs`：是否沪深港通标的。
+  - `vol`：成交量。
+  - `turnover_rate`：换手率。
+  - `pct_chg`：涨跌幅。
+  - `circ_mv`：流通市值。
+  - `volume_ratio`：量比。
+
+---
+
+### 股票筛选程序 - tushare_test3.py
+
+#### 功能描述
+
+1. 获取最近交易日期。
+2. 读取 `tushare_stock_basic_filter2_交易日期.csv` 文件，提取股票信息。
+3. 对每只股票，获取其 `list_date`（上市日期），提取年份，并通过`generate_quarter_list(start_year)` 获取从指定年份到当前年份的季度列表。
+4. 通过 `fetch_fina_indicator_vip_by_tscode(ts_code, quarter_list, is_save_csv=True)` 获取每只股票的财务数据。
+5. 根据以下规则筛选股票：
+  - 排除销售毛利率（`grossprofit_margin`）小于 10 或大于 50 的股票。
+  - 排除净资产收益率（`roe`）小于 7 或大于 25 的股票。
+  - 排除企业自由现金流量（`fcff`）为负的股票。
+6. 保存筛选结果为 `tushare_stock_basic_filter3_交易日期.csv` 文件。
+
+#### 输出文件和内容
+
+1. CSV 文件：`tushare_stock_basic_filter3_交易日期.csv` 包含以下字段：
+  - `ts_code`：股票代码。
+  - `name`：股票名称。
+  - `area`：地域。
+  - `industry`：所属行业。
+  - `market`：市场类型。
+  - `list_status`：上市状态。
+  - `list_date`：上市日期。
+  - `is_hs`：是否沪深港通标的。
+  - `vol`：成交量。
+  - `turnover_rate`：换手率。
+  - `pct_chg`：涨跌幅。
+  - `circ_mv`：流通市值。
+  - `volume_ratio`：量比。
+  - `ann_date`：公告日期。  
+  - `end_date`：报告期。  
+  - `roe`：净资产收益率。  
+  - `fcff`：企业自由现金流量。  
+  - `grossprofit_margin`：销售毛利率。  
+  - `equity_yoy`：净资产同比增长率。  
+  - `debt_to_assets`：资产负债率。  
+  - `update_flag`：更新标识。
+
+#### 合并文件功能
+
+1. 使用 `merge_csv_files(file1, file2, output_file)` 合并两个 CSV 文件，保留两个文件中都有的记录。
+2. 通过 `ts_code` 列进行合并，合并结果保存为 `tushare_stock_basic_filter3_交易日期_merged.csv` 文件。
+
+---
+
+### 股票筛选程序 - tushare_test4.py
+
+#### 功能描述
+
+1. 获取最近交易日期。
+2. 读取 `data/tushare_stock_basic_filter3_交易日期_merged.csv` 文件，提取股票信息。
+3. 调用get_recent_kdj_death_cross(ts_code)获取指定股票最近一次 KDJ 死叉的日期。如果发生在近期3个交易之内（get_last_n_trade_dates(n=3)）就排除掉这只股票；
+4. 调用get_recent_macd_death_cross(ts_code)获取指定股票最近一次MACD 死叉的日期。如果发生在近期3个交易之内（get_last_n_trade_dates(n=3)）就排除掉这只股票；
+5. 根据以下规则筛选股票：
+  - 排除掉近3个交易之内 KDJ 死叉的股票
+  - 排除掉近3个交易之内MACD  死叉的股票
+6. 保存筛选结果为 `tushare_stock_basic_filter4_交易日期.csv` 文件。
+
+#### 输入内容
+
+1. 交易日期：最近一个交易日（通过 get_last_trade_date 获取）。
+2. 输入文件：tushare_stock_basic_filter3_交易日期_merged.csv（包含财务数据和基本信息的股票列表）。
+ - 
+#### 输出文件和内容
+
+1. CSV 文件：`tushare_stock_basic_filter3_交易日期.csv` 包含以下字段：
+  - `ts_code`：股票代码。
+  - `name`：股票名称。
+  - `area`：地域。
+  - `industry`：所属行业。
+  - `market`：市场类型。
+  - `list_status`：上市状态。
+  - `list_date`：上市日期。
+  - `is_hs`：是否沪深港通标的。
+  - `vol`：成交量。
+  - `turnover_rate`：换手率。
+  - `pct_chg`：涨跌幅。
+  - `circ_mv`：流通市值。
+  - `volume_ratio`：量比。
+  - `ann_date`：公告日期。  
+  - `end_date`：报告期。  
+  - `roe`：净资产收益率。  
+  - `fcff`：企业自由现金流量。  
+  - `grossprofit_margin`：销售毛利率。  
+  - `equity_yoy`：净资产同比增长率。  
+  - `debt_to_assets`：资产负债率。  
+  - `update_flag`：更新标识。
+
+---
+
+
+## 相关资源说明
+
+### 工具类stock_utils
 
 ```
 get_tushare_api()
@@ -85,9 +275,9 @@ def fetch_fina_indicator_vip_by_tscode_quarter_str(ts_code, quarter_str, is_save
 
 ```
 
-### 1.2 API接口返回字段说明
+### API接口返回字段说明
 
-#### 1.2.1 基础信息API接口stock_basic
+#### 基础信息API接口stock_basic
 
  - 函数：fetch_stock_basic(trade_date)
  - 描述：可以获取所有上市公司基础信息，调取一次就可以拉取完。
@@ -115,7 +305,7 @@ act_name	str	Y	实控人名称
 act_ent_type	str	Y	实控人企业性质
 ```
 
-#### 1.2.2 日线行情API接口daily
+#### 日线行情API接口daily
 
  - 函数：fetch_daily(trade_date)
  - 描述：本接口是未复权行情，停牌期间不提供数据。只需输入参数trade_date，即可获取所有上市公司日线行情数据。
@@ -137,7 +327,7 @@ vol	float	成交量 （手）
 amount	float	成交额 （千元）
 ```
 
-#### 1.2.3 每日指标API接口daily_basic
+#### 每日指标API接口daily_basic
 
  - 函数：fetch_daily_basic(trade_date)
  - 描述：可获取全部股票每日重要的基本面指标，可用于选股分析、报表展示等。
@@ -166,178 +356,30 @@ total_mv	float	总市值 （万元）
 circ_mv	float	流通市值（万元）
 ```
 
-###  1.3 数据初始化程序 - init.py（无需生成代码）
+###  数据初始化程序 - init.py
 
-#### 1.3.1 功能描述
+#### 功能描述
 运行init.py主程序，将自动调用get_last_n_trade_dates(n=20)获得最近的20个交易日期列表后，生成3个接口（基础信息API接口stock_basic、日线行情API接口daily、每日指标API接口daily_basic）近20个交易日的csv文件名（tushare_stock_basic_交易日期.csv、tushare_daily_交易日期.csv、tushare_daily_basic_交易日期.csv），并检查是否存在，发现不存在就调用相应接口生成csv文件，依次完成csv数据文件的生成工作。
 
-#### 1.3.2 输入内容
+#### 输入内容
  - get_last_n_trade_dates(n=20)获得最近的20个交易日期
 
-#### 1.3.3 输出内容
+#### 输出内容
  - 生成3个接口（基础信息API接口stock_basic、日线行情API接口daily、每日指标API接口daily_basic）近20个交易日的csv文件（tushare_stock_basic_交易日期.csv、tushare_daily_交易日期.csv、tushare_daily_basic_交易日期.csv）
 
 
-## 2.股票筛选程序
 
-### 2.1 股票筛选程序 - tushare_test1.py（无需生成代码）
+## 后续开发计划
 
-#### 2.1.1 功能描述
+1. 增加多因子回归分析
+2. 实现策略回测框架
+3. 开发GUI操作界面
+4. 添加国际市场数据支持
 
-1. 本程序通过load_or_fetch_stock_basic 获取上市公司基础信息。
-2. 根据以下规则筛选股票：
-  - 排除近两年上市的股票；
-  - 排除名称含 "ST" 的股票；
-  - 排除代码以 "8" 或 "9" 开头的股票（新三板和 B 股市场）；
-  - 排除掉民营企业、外资企业的股票
-  - 仅保留市场类型market为"主板"的股票;
-3. 保存结果为 tushare_stock_basic_filter_交易日期.csv
+## 免责声明
 
-#### 2.1.2 输入内容
+本工具仅供学习交流使用，不构成任何投资建议。股市有风险，投资需谨慎。实际投资决策应考虑更多因素，建议咨询专业投资顾问。
 
-1. 交易日期：最近一个交易日。可通过工具类stock_utils的函数get_last_trade_date()获取最近一个交易日期。
+欢迎贡献代码或提出改进建议！
 
-#### 2.1.3 输出文件和内容
 
-1. CSV 文件：`tushare_stock_basic_filter2_交易日期.csv`，包含以下字段：
-   1. `ts_code`：股票代码。
-   2. `name`：股票名称。
-   3. `area`：地域。
-   4. `industry`：所属行业。
-   5. `market`：市场类型。
-   6. `list_status`：上市状态。
-   7. `list_date`：上市日期。
-   8. `is_hs`：是否沪深港通标的。
-
----
-
-### 2.2 股票筛选程序 - tushare_test2.py（无需生成代码）
-
-#### 2.2.1 功能描述
-
-1. 获取最近交易日期。
-2. 读取 `tushare_stock_basic_filter_交易日期.csv`（基础筛选结果，以下简称 csv1）。
-3. 读取 `tushare_daily_交易日期.csv`（日线行情数据，以下简称 csv2）和`tushare_daily_basic_交易日期.csv`（每日指标数据，以下简称 csv3）。
-4. 仅合并 `csv1` 中包含的股票，在 `csv2` 和 `csv3` 中对应的数据。
-5. 根据以下规则筛选股票：
-  - 排除流通市值（circ_mv）大于 500 亿的股票。
-  - 排除市盈率（pe）小于 5 或大于 50 的股票。
-6. 保存筛选结果为 `tushare_stock_basic_filter2_交易日期.csv`。
-
-#### 2.2.2 输入内容
-
-1. 交易日期：最近一个交易日（通过 `get_last_trade_date` 获取）。
-2. 输入文件：
-  - `tushare_stock_basic_filter_交易日期.csv`（csv1）。
-  - `tushare_daily_交易日期.csv`（csv2）。
-  - `tushare_daily_basic_交易日期.csv`（csv3）。
-
-#### 2.2.3 输出文件和内容
-
-1. CSV 文件：`tushare_stock_basic_filter2_交易日期.csv`，包含以下字段：
-  - `ts_code`：股票代码。
-  - `name`：股票名称。
-  - `area`：地域。
-  - `industry`：所属行业。
-  - `market`：市场类型。
-  - `list_status`：上市状态。
-  - `list_date`：上市日期。
-  - `is_hs`：是否沪深港通标的。
-  - `vol`：成交量。
-  - `turnover_rate`：换手率。
-  - `pct_chg`：涨跌幅。
-  - `circ_mv`：流通市值。
-  - `volume_ratio`：量比。
-
----
-
-### 2.3 股票筛选程序 - tushare_test3.py（无需生成代码）
-
-#### 2.3.1 功能描述
-
-1. 获取最近交易日期。
-2. 读取 `tushare_stock_basic_filter2_交易日期.csv` 文件，提取股票信息。
-3. 对每只股票，获取其 `list_date`（上市日期），提取年份，并通过`generate_quarter_list(start_year)` 获取从指定年份到当前年份的季度列表。
-4. 通过 `fetch_fina_indicator_vip_by_tscode(ts_code, quarter_list, is_save_csv=True)` 获取每只股票的财务数据。
-5. 根据以下规则筛选股票：
-  - 排除销售毛利率（`grossprofit_margin`）小于 10 或大于 50 的股票。
-  - 排除净资产收益率（`roe`）小于 7 或大于 25 的股票。
-  - 排除企业自由现金流量（`fcff`）为负的股票。
-6. 保存筛选结果为 `tushare_stock_basic_filter3_交易日期.csv` 文件。
-
-#### 2.3.2 输出文件和内容
-
-1. CSV 文件：`tushare_stock_basic_filter3_交易日期.csv` 包含以下字段：
-  - `ts_code`：股票代码。
-  - `name`：股票名称。
-  - `area`：地域。
-  - `industry`：所属行业。
-  - `market`：市场类型。
-  - `list_status`：上市状态。
-  - `list_date`：上市日期。
-  - `is_hs`：是否沪深港通标的。
-  - `vol`：成交量。
-  - `turnover_rate`：换手率。
-  - `pct_chg`：涨跌幅。
-  - `circ_mv`：流通市值。
-  - `volume_ratio`：量比。
-  - `ann_date`：公告日期。  
-  - `end_date`：报告期。  
-  - `roe`：净资产收益率。  
-  - `fcff`：企业自由现金流量。  
-  - `grossprofit_margin`：销售毛利率。  
-  - `equity_yoy`：净资产同比增长率。  
-  - `debt_to_assets`：资产负债率。  
-  - `update_flag`：更新标识。
-
-#### 2.3.3 合并文件功能
-
-1. 使用 `merge_csv_files(file1, file2, output_file)` 合并两个 CSV 文件，保留两个文件中都有的记录。
-2. 通过 `ts_code` 列进行合并，合并结果保存为 `tushare_stock_basic_filter3_交易日期_merged.csv` 文件。
-
----
-
-### 2.4 股票筛选程序 - tushare_test4.py（无需生成代码）
-
-#### 2.4.1 功能描述
-
-1. 获取最近交易日期。
-2. 读取 `data/tushare_stock_basic_filter3_交易日期_merged.csv` 文件，提取股票信息。
-3. 调用get_recent_kdj_death_cross(ts_code)获取指定股票最近一次 KDJ 死叉的日期。如果发生在近期3个交易之内（get_last_n_trade_dates(n=3)）就排除掉这只股票；
-4. 调用get_recent_macd_death_cross(ts_code)获取指定股票最近一次MACD 死叉的日期。如果发生在近期3个交易之内（get_last_n_trade_dates(n=3)）就排除掉这只股票；
-5. 根据以下规则筛选股票：
-  - 排除掉近3个交易之内 KDJ 死叉的股票
-  - 排除掉近3个交易之内MACD  死叉的股票
-6. 保存筛选结果为 `tushare_stock_basic_filter4_交易日期.csv` 文件。
-
-#### 2.4.2 输入内容
-
-1. 交易日期：最近一个交易日（通过 get_last_trade_date 获取）。
-2. 输入文件：tushare_stock_basic_filter3_交易日期_merged.csv（包含财务数据和基本信息的股票列表）。
- - 
-#### 2.4.3 输出文件和内容
-
-1. CSV 文件：`tushare_stock_basic_filter3_交易日期.csv` 包含以下字段：
-  - `ts_code`：股票代码。
-  - `name`：股票名称。
-  - `area`：地域。
-  - `industry`：所属行业。
-  - `market`：市场类型。
-  - `list_status`：上市状态。
-  - `list_date`：上市日期。
-  - `is_hs`：是否沪深港通标的。
-  - `vol`：成交量。
-  - `turnover_rate`：换手率。
-  - `pct_chg`：涨跌幅。
-  - `circ_mv`：流通市值。
-  - `volume_ratio`：量比。
-  - `ann_date`：公告日期。  
-  - `end_date`：报告期。  
-  - `roe`：净资产收益率。  
-  - `fcff`：企业自由现金流量。  
-  - `grossprofit_margin`：销售毛利率。  
-  - `equity_yoy`：净资产同比增长率。  
-  - `debt_to_assets`：资产负债率。  
-  - `update_flag`：更新标识。
-
----
