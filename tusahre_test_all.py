@@ -10,7 +10,7 @@ logger = setup_logger()
 
 
 def main():
-    friday_trade_dates = get_friday_trade_dates(2025, 2)
+    friday_trade_dates = get_friday_trade_dates(2025, 3)
 
     for trade_date in friday_trade_dates:
         logger.info(f'运行日期: {trade_date}')

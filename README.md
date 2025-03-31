@@ -38,11 +38,13 @@
 #### 功能描述
 
 本程序通过load_or_fetch_stock_basic 获取上市公司基础信息。根据以下规则筛选股票：
-  - 排除近两年上市的股票；
+  - 排除近两年上市的股票：**(暂未排除)**
   - 排除名称含 "ST" 的股票；
   - 排除代码以 "8" 或 "9" 开头的股票（新三板和 B 股市场）；
-  - 排除掉民营企业、外资企业的股票
-  - 仅保留市场类型market为"主板"的股票;
+  - 排除掉民营企业、外资企业的股票；**(暂未排除)**
+  - 仅保留市场类型market为"主板"的股票；**(未选择)**
+  - 排除民营企业和外资企业；**(暂未排除)**
+  - 仅保留银行；**(未选择)**
 
 保存结果为 tushare_stock_basic_filter_交易日期.csv
 
@@ -52,7 +54,7 @@
 
 #### 输出文件和内容
 
-CSV 文件：`tushare_stock_basic_filter2_交易日期.csv`，包含以下字段：
+CSV 文件：`tushare_stock_basic_filter1_交易日期.csv`，包含以下字段：
    1. `ts_code`：股票代码。
    2. `name`：股票名称。
    3. `area`：地域。
@@ -69,19 +71,19 @@ CSV 文件：`tushare_stock_basic_filter2_交易日期.csv`，包含以下字段
 #### 功能描述
 
 1. 获取最近交易日期。
-2. 读取 `tushare_stock_basic_filter_交易日期.csv`（基础筛选结果，以下简称 csv1）。
+2. 读取 `tushare_stock_basic_filter1_交易日期.csv`（基础筛选结果，以下简称 csv1）。
 3. 读取 `tushare_daily_交易日期.csv`（日线行情数据，以下简称 csv2）和`tushare_daily_basic_交易日期.csv`（每日指标数据，以下简称 csv3）。
 4. 仅合并 `csv1` 中包含的股票，在 `csv2` 和 `csv3` 中对应的数据。
 5. 根据以下规则筛选股票：
-  - 排除流通市值（circ_mv）大于 500 亿的股票。
-  - 排除市盈率（pe）小于 5 或大于 50 的股票。
+  - 排除流通市值（circ_mv）大于 1000 亿的股票。**（config.yaml中circ_mv指标定义）**
+  - 排除市盈率（pe）小于 5 或大于 50 的股票。**(暂未排除)**
 6. 保存筛选结果为 `tushare_stock_basic_filter2_交易日期.csv`。
 
 #### 输入内容
 
 1. 交易日期：最近一个交易日（通过 `get_last_trade_date` 获取）。
 2. 输入文件：
-  - `tushare_stock_basic_filter_交易日期.csv`（csv1）。
+  - `tushare_stock_basic_filter1_交易日期.csv`（csv1）。
   - `tushare_daily_交易日期.csv`（csv2）。
   - `tushare_daily_basic_交易日期.csv`（csv3）。
 
@@ -113,9 +115,10 @@ CSV 文件：`tushare_stock_basic_filter2_交易日期.csv`，包含以下字段
 3. 对每只股票，获取其 `list_date`（上市日期），提取年份，并通过`generate_quarter_list(start_year)` 获取从指定年份到当前年份的季度列表。
 4. 通过 `fetch_fina_indicator_vip_by_tscode(ts_code, quarter_list, is_save_csv=True)` 获取每只股票的财务数据。
 5. 根据以下规则筛选股票：
-  - 排除销售毛利率（`grossprofit_margin`）小于 10 或大于 50 的股票。
-  - 排除净资产收益率（`roe`）小于 7 或大于 25 的股票。
-  - 排除企业自由现金流量（`fcff`）为负的股票。
+  - 排除净资产收益率（`roe`）小于4 的股票。**（config.yaml中指定）**
+  - 排除净利润增长率（`q_netprofit_yoy`）小于0 的股票。***（config.yaml中指定）**
+  - 排除资产负债率（`debt_to_assets`）大于 80股票。***（config.yaml中指定）**
+  - 排除企业自由现金流量（`fcff`）为负的股票。**(暂未排除)**
 6. 保存筛选结果为 `tushare_stock_basic_filter3_交易日期.csv` 文件。
 
 #### 输出文件和内容
@@ -159,8 +162,10 @@ CSV 文件：`tushare_stock_basic_filter3_交易日期.csv` 包含以下字段�
 3. 调用get_recent_kdj_death_cross(ts_code)获取指定股票最近一次 KDJ 死叉的日期。如果发生在近期3个交易之内（get_last_n_trade_dates(n=3)）就排除掉这只股票；
 4. 调用get_recent_macd_death_cross(ts_code)获取指定股票最近一次MACD 死叉的日期。如果发生在近期3个交易之内（get_last_n_trade_dates(n=3)）就排除掉这只股票；
 5. 根据以下规则筛选股票：
-  - 排除掉近3个交易之内 KDJ 死叉的股票
-  - 排除掉近3个交易之内MACD  死叉的股票
+  - 保留成交额i降序排名前6个股票；**（config.yaml中top_volume指定）**
+  - 涨幅降序排列的前3名；**（config.yaml中top_pct_chg指定）**
+  - 排除掉近3个交易之内 KDJ 死叉的股票；**(暂未加入)**
+  - 排除掉近3个交易之内MACD  死叉的股票；**(暂未加入)**
 6. 保存筛选结果为 `tushare_stock_basic_filter4_交易日期.csv` 文件。
 
 #### 输入内容
@@ -170,7 +175,7 @@ CSV 文件：`tushare_stock_basic_filter3_交易日期.csv` 包含以下字段�
 
 #### 输出文件和内容
 
-CSV 文件：`tushare_stock_basic_filter3_交易日期.csv` 包含以下字段：
+CSV 文件：`tushare_stock_basic_filter4_交易日期.csv` 包含以下字段：
   - `ts_code`：股票代码。
   - `name`：股票名称。
   - `area`：地域。

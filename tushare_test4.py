@@ -42,6 +42,8 @@ def filter_stocks_by_weekly(trade_date):
         logger.info(f"初始股票总数: {df.shape[0]}")
 
         # 合并 csv1 和 csv2，基于 ts_code 进行合并
+        # 只保留 df 和 weekly_df 中 ts_code 都存在的行。
+        # 如果某个 ts_code 在 df 中存在但在 weekly_df 中不存在（或反之），则该行会被丢弃。
         merged_df = pd.merge(df, weekly_df, on='ts_code', how='inner')
         logger.info(f"合并后的股票数量: {merged_df.shape[0]}")
 
