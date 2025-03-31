@@ -29,7 +29,14 @@ class Singleton(object):
         self.csv_dir = self._config['paths']['csv_dir']
         self.log_dir = self._config['paths']['log_dir']
         self.filter_dir = self._config['paths']['filter_dir']
+
         self.token = self._config["tushare"]["token"]
+        if not self.token:
+            try:
+                with open("tushare.token", "r") as f:
+                    self.token = f.read().strip()
+            except FileNotFoundError:
+                pass  # 保持 self.token 为空
 
         self.circ_mv = self._config['stock_selection']['circ_mv']  # 流通市值，单位：万元
         self.roe = self._config['stock_selection']['roe']  # 净资产收益率（ROE）不低于 >= 4%

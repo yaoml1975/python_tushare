@@ -1,5 +1,5 @@
 tushare:
-  token: "填写你的 tushare token"
+  token: "" # 此处填写你申请到的 tushare token
 
 paths:
   csv_dir: "data"
