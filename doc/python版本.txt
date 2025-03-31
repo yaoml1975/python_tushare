@@ -1,0 +1,2 @@
+(python_tushare) D:\github\python_tushare>python -V
+Python 3.9.21

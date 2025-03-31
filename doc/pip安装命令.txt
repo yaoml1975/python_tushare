@@ -1,0 +1,41 @@
+pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
+
+or
+
+pip install pandas -i https://mirrors.aliyun.com/pypi/simple/
+
+pip install tqdm -i https://mirrors.aliyun.com/pypi/simple/
+
+pip install openpyxl -i https://mirrors.aliyun.com/pypi/simple/
+
+pip install tushare -i https://mirrors.aliyun.com/pypi/simple/
+
+pip install pyyaml -i https://mirrors.aliyun.com/pypi/simple/
+
+(python_tushare) D:\github\python_tushare>pip freeze
+beautifulsoup4==4.13.3
+bs4==0.0.2
+certifi==2025.1.31
+charset-normalizer==3.4.1
+colorama==0.4.6
+et_xmlfile==2.0.0
+idna==3.10
+lxml==5.3.1
+numpy==2.0.2
+openpyxl==3.1.5
+pandas==2.2.3
+python-dateutil==2.9.0.post0
+pytz==2025.2
+PyYAML==6.0.2
+requests==2.32.3
+simplejson==3.20.1
+six==1.17.0
+soupsieve==2.6
+tqdm==4.67.1
+tushare==1.4.21
+typing_extensions==4.13.0
+tzdata==2025.2
+urllib3==2.3.0
+websocket-client==1.8.0
+
+(python_tushare) D:\github\python_tushare>pip freeze > requirements.txt
