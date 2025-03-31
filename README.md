@@ -7,22 +7,28 @@
 ## 技术架构
 
 ### 核心组件
-• **编程语言**: Python 3.9.21
-• **数据接口**: Tushare Pro API (需注册获取token)
-• **主要依赖库**:（详见:requirements.txt)
-  • pandas (数据处理)
-  • numpy (数值计算)
-  • tushare (金融数据获取)
-  • matplotlib/seaborn (可视化)
-  • requests (API调用)
-  • logging (日志记录)
 
-### 数据源
+#### 编程语言:
+  - Python 3.9.21
+
+#### 数据接口: 
+  - Tushare Pro API (需注册获取token)
+
+#### 主要依赖库:（详见:requirements.txt)
+  - pandas (数据处理)
+  - numpy (数值计算)
+  - tushare (金融数据获取)
+  - matplotlib/seaborn (可视化)
+  - requests (API调用)
+  - logging (日志记录)
+
+### 数据源 - Tushare Pro
+
 通过**Tushare Pro**接口获取以下金融数据:**（需申请5000积分的token）**
-• 股票基本信息
-• 财务数据(资产负债表、利润表、现金流量表)
-• 行情数据(日K线、复权因子)
-• 估值指标(PE/PB/PS等)
+  - 股票基本信息
+  - 财务数据(资产负债表、利润表、现金流量表)
+  - 行情数据(日K线、复权因子)
+  - 估值指标(PE/PB/PS等)
 
 
 ## 巴菲特选股策略的四步实现
@@ -31,22 +37,22 @@
 
 #### 功能描述
 
-1. 本程序通过load_or_fetch_stock_basic 获取上市公司基础信息。
-2. 根据以下规则筛选股票：
+本程序通过load_or_fetch_stock_basic 获取上市公司基础信息。根据以下规则筛选股票：
   - 排除近两年上市的股票；
   - 排除名称含 "ST" 的股票；
   - 排除代码以 "8" 或 "9" 开头的股票（新三板和 B 股市场）；
   - 排除掉民营企业、外资企业的股票
   - 仅保留市场类型market为"主板"的股票;
-3. 保存结果为 tushare_stock_basic_filter_交易日期.csv
+
+保存结果为 tushare_stock_basic_filter_交易日期.csv
 
 #### 输入内容
 
-1. 交易日期：最近一个交易日。可通过工具类stock_utils的函数get_last_trade_date()获取最近一个交易日期。
+交易日期：最近一个交易日。可通过工具类stock_utils的函数get_last_trade_date()获取最近一个交易日期。
 
 #### 输出文件和内容
 
-1. CSV 文件：`tushare_stock_basic_filter2_交易日期.csv`，包含以下字段：
+CSV 文件：`tushare_stock_basic_filter2_交易日期.csv`，包含以下字段：
    1. `ts_code`：股票代码。
    2. `name`：股票名称。
    3. `area`：地域。
@@ -81,7 +87,7 @@
 
 #### 输出文件和内容
 
-1. CSV 文件：`tushare_stock_basic_filter2_交易日期.csv`，包含以下字段：
+CSV 文件：`tushare_stock_basic_filter2_交易日期.csv`，包含以下字段：
   - `ts_code`：股票代码。
   - `name`：股票名称。
   - `area`：地域。
@@ -114,7 +120,7 @@
 
 #### 输出文件和内容
 
-1. CSV 文件：`tushare_stock_basic_filter3_交易日期.csv` 包含以下字段：
+CSV 文件：`tushare_stock_basic_filter3_交易日期.csv` 包含以下字段：
   - `ts_code`：股票代码。
   - `name`：股票名称。
   - `area`：地域。
@@ -161,10 +167,10 @@
 
 1. 交易日期：最近一个交易日（通过 get_last_trade_date 获取）。
 2. 输入文件：tushare_stock_basic_filter3_交易日期_merged.csv（包含财务数据和基本信息的股票列表）。
- - 
+
 #### 输出文件和内容
 
-1. CSV 文件：`tushare_stock_basic_filter3_交易日期.csv` 包含以下字段：
+CSV 文件：`tushare_stock_basic_filter3_交易日期.csv` 包含以下字段：
   - `ts_code`：股票代码。
   - `name`：股票名称。
   - `area`：地域。
