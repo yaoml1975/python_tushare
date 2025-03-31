@@ -1,7 +1,7 @@
 data/
 result/
 logs/
-.token
+/tushare.token
 
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template
@@ -136,3 +136,4 @@ dmypy.json
 /.idea/
 */__pycache__
 /.vscode/settings.json
+
