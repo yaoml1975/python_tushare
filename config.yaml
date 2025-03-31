@@ -1,0 +1,16 @@
+# Tushare Pro configuration
+tushare:
+  token: YOUR_TUSHARE_PRO_TOKEN
+  timeout: 30
+
+# Data cache settings
+cache:
+  enabled: true
+  directory: ./data_cache
+  ttl_days: 7
+
+# Trading settings
+trading:
+  commission_rate: 0.0003  # 0.03%
+  tax_rate: 0.001  # 0.1%
+  slippage: 0.002  # 0.2%
