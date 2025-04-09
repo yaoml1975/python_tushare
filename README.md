@@ -1,4 +1,4 @@
-# 项目介绍：基于巴菲特选股策略的量化选股工具 - python_tushare
+# 基于巴菲特选股策略的量化选股工具 - python_tushare
 
 ![Python Version](https://img.shields.io/badge/Python-3.9.21-blue)
 ![Tushare Pro](https://img.shields.io/badge/Data_Tushare_Pro-API-green)
