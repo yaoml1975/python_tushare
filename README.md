@@ -24,7 +24,7 @@
 
 #### 微信捐赠二维码
 
-<img src="images/wechat-donate.jpg" alt="微信捐赠二维码" width="33%" />
+<img src="http://dtmofang.com:18858/api/public/dl/qXIEQPci?inline=true" alt="微信捐赠二维码" width="33%" />
 
 
 
