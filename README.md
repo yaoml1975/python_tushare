@@ -1,5 +1,8 @@
 # 项目介绍：基于巴菲特选股策略的量化选股工具 - python_tushare
 
+![Python Version](https://img.shields.io/badge/Python-3.9.21-blue)
+![Tushare Pro](https://img.shields.io/badge/Data_Tushare_Pro-API-green)
+
 ## 📖 项目概述
 
 本项目是基于沃伦·巴菲特(Warren Buffett)价值投资策略构建的量化选股工具，通过调用**Tushare金融数据接口**，实现了巴菲特价值投资策略的自动化筛选选股流程。该程序将巴菲特的经典选股原则转化为可量化的指标，通过四个系统化的步骤对A股市场股票进行筛选，帮助投资者发现具有长期投资价值的优质企业。核心功能包括：
@@ -20,7 +23,7 @@
 
 #### 微信捐赠二维码
 
-<img src="images/wechat-donate.png" alt="微信捐赠二维码" style="zoom:33%;" />
+<img src="images/wechat-donate.jpg" alt="微信捐赠二维码" style="zoom:33%;" />
 
 > **资金透明承诺**  
 > 捐赠明细及用途将在[更新日志](CHANGELOG.md)中定期公示，确保开源项目的可持续性发展。
