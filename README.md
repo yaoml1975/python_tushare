@@ -23,7 +23,7 @@
 
 #### 微信捐赠二维码
 
-<img src="images/wechat-donate.jpg" alt="微信捐赠二维码" style="zoom:33%;" />
+<img src="images/wechat-donate.jpg" alt="微信捐赠二维码" width="33%" />
 
 > **资金透明承诺**  
 > 捐赠明细及用途将在[更新日志](CHANGELOG.md)中定期公示，确保开源项目的可持续性发展。
